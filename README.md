@@ -36,3 +36,21 @@ Este fichero contiene toda la lista de canales preconfigurados, que de momento c
 Es posible introducir nuevos canales con el siguiente formato: `<NOMBRE_CANAL>;<ENLACE_SOPCAST>`
 
 Los canales de ArenaVision, sin embargo, están asociados a una dirección HTTP ya que el código de canal no siempre se mantiene y es necesario comprobarlo al vuelo antes de realizar la conexión.
+
+La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lista actual es la siguiente:
+
+    ID    Canal
+    1     ArenaVision 1
+    2     ArenaVision 2
+    3     ArenaVision 3
+    4     ArenaVision 4
+    5     ArenaVision 5
+    6     ArenaVision 6
+    7     ArenaVision 7
+    8     ArenaVision 8
+    9     ArenaVision 9
+    10    ArenaVision 10
+    11    ArenaVision 11
+
+### Ejemplo de uso
+Ejemplo de reproducción del canal ArenaVision 5 arrancando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
