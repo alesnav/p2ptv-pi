@@ -1,11 +1,12 @@
-ArenaVision 1;http://www.arenavision.in/p/p1.html
-ArenaVision 2;http://www.arenavision.in/p/p2.html
-ArenaVision 3;http://www.arenavision.in/p/p3.html
-ArenaVision 4;http://www.arenavision.in/p/p4.html
-ArenaVision 5;http://www.arenavision.in/p/p5.html
-ArenaVision 6;http://www.arenavision.in/p/p6.html
-ArenaVision 7;http://www.arenavision.in/p/p7.html
-ArenaVision 8;http://www.arenavision.in/p/p8.html
-ArenaVision 9;http://www.arenavision.in/p/p9.html
-ArenaVision 10;http://www.arenavision.in/p/p10.html
-ArenaVision 11;http://www.arenavision.in/p/p11.html
+Sopcast;ArenaVision 1;http://www.arenavision.in/p/p1.html
+Sopcast;ArenaVision 2;http://www.arenavision.in/p/p2.html
+Sopcast;ArenaVision 3;http://www.arenavision.in/p/p3.html
+Sopcast;ArenaVision 4;http://www.arenavision.in/p/p4.html
+Sopcast;ArenaVision 5;http://www.arenavision.in/p/p5.html
+Sopcast;ArenaVision 6;http://www.arenavision.in/p/p6.html
+Sopcast;ArenaVision 7;http://www.arenavision.in/p/p7.html
+Sopcast;ArenaVision 8;http://www.arenavision.in/p/p8.html
+Sopcast;ArenaVision 9;http://www.arenavision.in/p/p9.html
+Sopcast;ArenaVision 10;http://www.arenavision.in/p/p10.html
+Sopcast;ArenaVision 11;http://www.arenavision.in/p/p11.html
+AceStream;Sky Sports 1;acestream://ff6d068d982f5ac218d164cf43f97dc39926cf55
