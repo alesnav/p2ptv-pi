@@ -1,0 +1,26 @@
+#Embedded file name: ACEStream\Core\dispersy\dispersydatabase.pyo
+from socket import gethostbyname
+from hashlib import sha1
+from os import path
+from database import Database
+schema = u"\nCREATE TABLE user(\n id INTEGER PRIMARY KEY AUTOINCREMENT,          -- local counter for database optimization\n mid BLOB,                                      -- member identifier (sha1 of public_key)\n public_key BLOB,                               -- member key (public part)\n host TEXT DEFAULT '',\n port INTEGER DEFAULT -1,\n tags INTEGER DEFAULT 0,\n UNIQUE(mid));\n\nCREATE TABLE tag(\n key INTEGER,\n value TEXT,\n UNIQUE(value));\n\nINSERT INTO tag (key, value) VALUES (1, 'store');\nINSERT INTO tag (key, value) VALUES (2, 'ignore');\nINSERT INTO tag (key, value) VALUES (4, 'drop');\nINSERT INTO tag (key, value) VALUES (1, 'in-order');\nINSERT INTO tag (key, value) VALUES (2, 'out-order');\nINSERT INTO tag (key, value) VALUES (3, 'random-order');\n\n--CREATE TABLE identity(\n-- user INTEGER REFERENCES user(id),\n-- community INTEGER REFERENCES community(id),\n-- packet BLOB,\n-- UNIQUE(user, community));\n\nCREATE TABLE community(\n id INTEGER PRIMARY KEY AUTOINCREMENT,          -- local counter for database optimization\n user INTEGER REFERENCES user(id),              -- my member that is used to sign my messages\n classification TEXT,                           -- the community type, typically the class name\n cid BLOB,                                      -- the sha1 digest of the public_key\n public_key BLOB DEFAULT '',                    -- community master key (public part) when available\n auto_load BOOL DEFAULT 1,                      -- when 1 this community is loaded whenever a packet for it is received\n UNIQUE(user, cid, public_key));\n\nCREATE TABLE key(\n public_key BLOB,                               -- public part\n private_key BLOB,                              -- private part\n UNIQUE(public_key, private_key));\n\nCREATE TABLE candidate(\n community INTEGER REFERENCES community(id),\n host TEXT,                                             -- IP address\n port INTEGER,                                          -- port number\n incoming_time TEXT DEFAULT '2010-01-01 00:00:00',      -- time when received data\n outgoing_time TEXT DEFAULT '2010-01-01 00:00:00',      -- time when data send\n external_time TEXT DEFAULT '2010-01-01 00:00:00',      -- time when we heared about this address from 3rd party\n UNIQUE(community, host, port));\n\nCREATE TABLE name(\n id INTEGER PRIMARY KEY AUTOINCREMENT,\n value TEXT);\n\n-- when a message has multiple signatures, using the MultiMemberAuthentication policy, the\n-- reference_user_sync table contains an entry for each member\nCREATE TABLE reference_user_sync(\n user INTEGER REFERENCES user(id),\n sync INTEGER REFERENCES sync(id),\n UNIQUE(user, sync));\n\nCREATE TABLE sync(\n id INTEGER PRIMARY KEY AUTOINCREMENT,\n community INTEGER REFERENCES community(id),\n name INTEGER REFERENCES name(id),\n user INTEGER REFERENCES user(id),              -- the creator of the message\n global_time INTEGER,\n synchronization_direction INTEGER REFERENCES tag(key),\n distribution_sequence INTEGER DEFAULT 0,       -- used for the sync-distribution policy\n destination_cluster INTEGER DEFAULT 0,         -- used for the similarity-destination policy\n packet BLOB,\n UNIQUE(community, user, global_time));\n\n--CREATE TABLE similarity(\n-- id INTEGER PRIMARY KEY AUTOINCREMENT,\n-- community INTEGER REFERENCES community(id),\n-- user INTEGER REFERENCES user(id),\n-- cluster INTEGER,\n-- similarity BLOB,\n-- packet BLOB,\n-- UNIQUE(community, user, cluster));\n\n-- TODO: remove id, community, user, and cluster columns and replace with refrence to similarity table\n-- my_similarity is used to store the similarity bits\n-- as set by the user *before* regulating\n--CREATE TABLE my_similarity (\n-- id INTEGER PRIMARY KEY AUTOINCREMENT,\n-- community INTEGER REFERENCES community(id),\n-- user INTEGER REFERENCES user(id),\n-- cluster INTEGER,\n-- similarity BLOB,\n-- UNIQUE(community, user));\n\nCREATE TABLE option(key TEXT PRIMARY KEY, value BLOB);\nINSERT INTO option(key, value) VALUES('database_version', '1');\n"
+
+class DispersyDatabase(Database):
+
+    def __init__(self, working_directory):
+        return Database.__init__(self, path.join(working_directory, u'dispersy.db'))
+
+    def check_database(self, database_version):
+        if database_version == u'0':
+            self.executescript(schema)
+            self.bootstrap()
+        elif database_version == u'1':
+            pass
+
+    def bootstrap(self):
+        host = unicode(gethostbyname(u'dispersy1.tribler.org'))
+        port = 6421
+        public_key = '3081a7301006072a8648ce3d020106052b810400270381920004015f83ac4e8fe506c4035853096187814b93dbe566dbb24f98c51252c3d3a346a1c5813c7db8ece549f92c5ca9fd1cd58018a60e92432bcc12a610760f35b5907094cb6d7cd4e67001a1ab08b3a626a3884ebb5fe69969c47aba087075c72a326ae62046867aa435d71b59a388b5ecbf100896d1ed36131a0c4f6c5c3cb4f19a341919e87976eb03cdea8d6d85704370'.decode('HEX')
+        mid = '3a4abd4ebb317172c057728799a5e5ea88c6bffa'.decode('HEX')
+        self.execute(u'INSERT INTO user(mid, public_key) VALUES(?, ?)', (buffer(mid), buffer(public_key)))
+        self.execute(u'INSERT INTO candidate(community, host, port) VALUES(0, ?, ?)', (host, port))
