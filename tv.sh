@@ -61,7 +61,7 @@ get_sopcast_link()
 list_channels()
 {
 	printf "ID\tCanal\n"
-	for i in "${!CANALES[@]}"; do 
+	for i in "${!CANALES[@]}"; do
 		printf "%s\t%s\n" "$i" "${CANALES[$i]}"
 	done
 }
@@ -136,9 +136,9 @@ fi
 stop_playing
 echo "${TEXTO}"
 if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
-	${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
 elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
-	${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
 	sleep 20
 fi
 
@@ -171,7 +171,7 @@ if [[ ${OMXPLAYER} -eq 1 ]]; then
 		/etc/init.d/xbmc stop
 	fi
 	echo "Iniciando OMXPlayer..."
-	omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
+	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
 fi
 
 exit 0
