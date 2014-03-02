@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PRG=$0
-VERSION="TV P2P - Sopcast-Pi v1.0"
+VERSION="TV P2P - Sopcast-Pi v2.0"
 number_regex='^[0-9]+$'
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
