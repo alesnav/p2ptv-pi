@@ -49,14 +49,21 @@ stop_playing()
 
 get_sopcast_link()
 {
-	wget $1 -O ${DIR}/page.html -o /dev/null
-	sopcast_link_tmp=`grep "sop://" ${DIR}/page.html | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
-	rm -f ${DIR}/page.html
+	sopcast_link_tmp=`wget $1 -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
+	#sopcast_link_tmp=`grep "sop://" ${DIR}/page.html | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
+	#rm -f ${DIR}/page.html
 	if ! [[ ${sopcast_link: -1} =~ ${number_regex} ]]; then
 		sopcast_link_tmp=${sopcast_link_tmp%?}
 	fi
 	sopcast_link="sop://${sopcast_link_tmp}"
 	echo "${sopcast_link}"
+}
+
+get_acestream_link()
+{
+	acestream_link_tmp=`wget $1 -O - -o /dev/null | grep "this.loadPlayer" | cut -d '"' -f2`
+	acestream_link="acestream://${acestream_link_tmp}"
+	echo "${acestream_link}"
 }
 
 list_channels()
@@ -125,10 +132,17 @@ elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "$
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
 	fi
 elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
-	ENLACE_P2P=${ENLACES[${CANAL}]}
-	ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
-	TEXTO="Cargando canal AceStream ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
-	NOMBRE_CANAL=${CANALES[${CANAL}]}	
+	if [[ ${ENLACES[${CANAL}]} == acestream://* ]]; then
+		ENLACE_P2P=${ENLACES[${CANAL}]}
+		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
+		TEXTO="Cargando canal AceStream ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
+		NOMBRE_CANAL=${CANALES[${CANAL}]}
+	elif [[ ${ENLACES[${CANAL}]} == http* ]]; then
+		ENLACE_P2P=`get_acestream_link ${ENLACES[${CANAL}]}`
+		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
+		TEXTO="Cargando canal AceStream ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
+		NOMBRE_CANAL=${CANALES[${CANAL}]}
+	fi
 else
 	usage
 	exit 1
@@ -138,11 +152,11 @@ stop_playing
 echo "${TEXTO}"
 if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
 	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
-	sleep 10
 elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
-	sleep 20
 fi
+
+sleep 10
 
 let timeout=0
 while [ ${timeout} -lt 30 ]; do ((++i))
@@ -155,7 +169,7 @@ while [ ${timeout} -lt 30 ]; do ((++i))
 	if [ -n "${listening}" ] || [ -z "${process}" ]; then
 		break
 	else
-		sleep 1
+		sleep 2
 	fi
 done
 
@@ -173,7 +187,7 @@ if [[ ${OMXPLAYER} -eq 1 ]]; then
 		/etc/init.d/xbmc stop
 	fi
 	echo "Iniciando OMXPlayer..."
-	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
+	nice -10 omxplayer -r -g --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
 fi
 
 exit 0

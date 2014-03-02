@@ -34,7 +34,7 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 * Si xbmc está instalado, deberá existir un script de arranque y parada para que sea posible parar xbmc y arrancar OMXPlayer. Concretamente, el script deberá quedar en `/etc/init.d/xbmc`.
 
 ### Lista de canales preconfigurados `canales.txt`
-Este fichero contiene toda la lista de canales preconfigurados, que de momento coincide con los once canales de [ArenaVision](http://www.arenavision.in/) para Sopcast y SkySports 1 para AceStream.
+Este fichero contiene toda la lista de canales preconfigurados, que de momento coincide con los once canales de [ArenaVision](http://www.arenavision.in/), de los cuales dos son de tipo AceStream y el resto de Sopcast.
 
 Es posible introducir nuevos canales con el siguiente formato: `<Sopcast|AceStream>;<NOMBRE_CANAL>;<ENLACE>`
 
@@ -54,7 +54,6 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     9     ArenaVision 9
     10    ArenaVision 10
     11    ArenaVision 11
-    12    SkySports 1
 
 ### Instalación
     git clone https://github.com/alesnav/p2ptv-pi.git
