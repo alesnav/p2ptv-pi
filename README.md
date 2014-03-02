@@ -57,7 +57,7 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     12    SkySports 1
 
 ### Instalación
-    `git clone https://github.com/alesnav/p2ptv-pi.git`
+    git clone https://github.com/alesnav/p2ptv-pi.git
 
 ### Ejemplo de uso
 Ejemplo de reproducción del canal ArenaVision 5 arrancando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
