@@ -18,10 +18,10 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 #### Opciones
 * **-h** - Muestra este menú
 * **-v** - Muestra la versión
-* **-s** - Apaga OMXPlayer y cierra la conexión con Sopcast
+* **-s** - Apaga OMXPlayer y cierra la conexión P2P TV
 * **-l** - Lista de todos los canales preconfigurados
 * **-c [CANAL]** - Indica el canal a cargar (ver formatos admitidos)
-* **-o** - Apaga XBMC y ejecuta OMXPlayer
+* **-o** - Apaga XBMC e inicia OMXPlayer
 
 #### Formatos admitidos para [CANAL]
 * Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: `./tv.sh -c 1`
@@ -60,4 +60,4 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     git clone https://github.com/alesnav/p2ptv-pi.git
 
 ### Ejemplo de uso
-Ejemplo de reproducción del canal ArenaVision 5 arrancando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
+Ejemplo de reproducción del canal ArenaVision 5 iniciando automáticamente OMXPlayer: `./tv.sh -c 5 -o`

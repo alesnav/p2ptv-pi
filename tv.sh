@@ -21,14 +21,15 @@ usage()
 	echo "Opciones:"
 	echo " -h			Muestra este menú"
 	echo " -v			Muestra la versión"
-	echo " -s			Apaga OMXPlayer y cierra la conexión con Sopcast"
+	echo " -s			Apaga OMXPlayer y cierra la conexión P2P TV"
 	echo " -l			Lista de todos los canales preconfigurados"
 	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)"
-	echo " -o			Apaga XBMC y ejecuta OMXPlayer"
+	echo " -o			Apaga XBMC e inicia OMXPlayer"
 	echo ""
 	echo "Formatos admitidos para [CANAL]:"
-	echo " - Enlace completo de Sopcast. Ejemplo: sop://broker.sopcast.com:3912/150577"
-	echo " - Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: 1"
+	echo " - Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: ./tv.sh -c 1"
+        echo " - Enlace completo de Sopcast. Ejemplo: ./tv.sh -c sop://broker.sopcast.com:3912/150577"
+        echo " - Enlace completo de AceStream. Ejemplo: ./tv.sh -c acestream://ff6d068d982f5ac218d164cf43f97dc39926cf55"
 }
 
 stop_playing()
