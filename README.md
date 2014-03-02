@@ -4,7 +4,7 @@ P2P TV (Sopcast & AceStream) para Raspberry Pi.
 
 Cliente Sopcast basado en [este cliente Sopcast para Linux](https://code.google.com/p/sopcast-player/downloads/list) y utilizando qemu-i386. Gracias a [tayoken](http://www.raspberrypi.org/phpBB3/memberlist.php?mode=viewprofile&u=72614) por recompilar qemu-i386 y [compartirlo](http://www.raspberrypi.org/phpBB3/viewtopic.php?t=46342).
 
-Cliente AceStream realizado por [tarasian666](https://github.com/tarasian666/) y accesible mediante el [repositorio Github](https://github.com/tarasian666/acestream)
+Cliente AceStream realizado por [tarasian666](https://github.com/tarasian666/) y accesible mediante el [repositorio Github](https://github.com/tarasian666/acestream).
 
 Gracias a [somosbinarios.es](http://www.somosbinarios.es) por realizar el desarrollo de la idea de la que parte este código. Se puede acceder a la versión 1.1 mediante [este enlace](http://www.somosbinarios.es/raspberry-pi-television-y-futbol-en-un-click-v1-1/).
 
@@ -55,6 +55,9 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     10    ArenaVision 10
     11    ArenaVision 11
     12    SkySports 1
+
+### Instalación
+    `git clone https://github.com/alesnav/p2ptv-pi.git`
 
 ### Ejemplo de uso
 Ejemplo de reproducción del canal ArenaVision 5 arrancando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
