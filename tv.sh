@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 PRG=$0
@@ -137,6 +138,7 @@ stop_playing
 echo "${TEXTO}"
 if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
 	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	sleep 10
 elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
 	sleep 20
