@@ -23,6 +23,7 @@ usage()
 	echo " -h			Muestra este menú"
 	echo " -v			Muestra la versión"
 	echo " -s			Apaga OMXPlayer y cierra la conexión P2P TV"
+	echo " -x			(Conjuntamente con -s) Inicia XBMC tras apagar OMXPlayer y cerrar la conexión P2P TV"
 	echo " -l			Lista de todos los canales preconfigurados"
 	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)"
 	echo " -o			Apaga XBMC e inicia OMXPlayer"
@@ -45,13 +46,20 @@ stop_playing()
 		listening=`netstat -na | grep 6878 | grep LISTEN | tail -1`
 		sleep 1
 	done
+	if [[ ${XBMC} -eq 1 ]]; then
+		if ps ax | grep -v grep | grep xbmc > /dev/null; then
+			echo "Reiniciando XBMC..."
+			/etc/init.d/xbmc restart
+		else
+			echo "Iniciando XBMC..."
+			/etc/init.d/xbmc start
+		fi
+	fi
 }
 
 get_sopcast_link()
 {
 	sopcast_link_tmp=`wget $1 -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
-	#sopcast_link_tmp=`grep "sop://" ${DIR}/page.html | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
-	#rm -f ${DIR}/page.html
 	if ! [[ ${sopcast_link: -1} =~ ${number_regex} ]]; then
 		sopcast_link_tmp=${sopcast_link_tmp%?}
 	fi
@@ -76,7 +84,7 @@ list_channels()
 
 [[ $# -lt 1 ]] && usage && exit 1
 
-while getopts ":hvsloc:" OPTION
+while getopts ":hvxsloc:" OPTION
 do
 	case "$OPTION" in
 		h)
@@ -86,6 +94,9 @@ do
 		v)
 			echo "${VERSION}"
 			exit 1
+			;;
+		x)
+			XBMC=1;
 			;;
 		s)
 			stop_playing
@@ -154,6 +165,7 @@ if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
 	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
 elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	sleep 10
 fi
 
 sleep 10
@@ -187,7 +199,7 @@ if [[ ${OMXPLAYER} -eq 1 ]]; then
 		/etc/init.d/xbmc stop
 	fi
 	echo "Iniciando OMXPlayer..."
-	nice -10 omxplayer -r -g --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
+	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
 fi
 
 exit 0

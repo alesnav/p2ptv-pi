@@ -19,6 +19,7 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 * **-h** - Muestra este menú
 * **-v** - Muestra la versión
 * **-s** - Apaga OMXPlayer y cierra la conexión P2P TV
+* **-x** - (Conjuntamente con -s) Inicia XBMC tras apagar OMXPlayer y cerrar la conexión P2P TV
 * **-l** - Lista de todos los canales preconfigurados
 * **-c [CANAL]** - Indica el canal a cargar (ver formatos admitidos)
 * **-o** - Apaga XBMC e inicia OMXPlayer
