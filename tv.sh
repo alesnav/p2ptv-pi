@@ -2,7 +2,7 @@
 #!/bin/bash
 
 PRG=$0
-VERSION="p2ptv-pi v2.1"
+VERSION="p2ptv-pi v2.2"
 number_regex='^[0-9]+$'
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
