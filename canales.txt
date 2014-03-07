@@ -9,4 +9,8 @@ Sopcast;ArenaVision 8;http://www.arenavision.in/p/p8.html
 AceStream;ArenaVision 9;http://www.arenavision.in/p/p9.html
 AceStream;ArenaVision 10;http://www.arenavision.in/p/p10.html
 Sopcast;ArenaVision 11;http://www.arenavision.in/p/p11.html
-
+AceStream;EuroSport International;http://torrent-tv.ru/torrent-online.php?translation=7381
+AceStream;EuroSport 2 International;http://torrent-tv.ru/torrent-online.php?translation=7383
+AceStream;Sky Sports F1;http://torrent-tv.ru/torrent-online.php?translation=7831
+AceStream;Sky Sports 3;http://torrent-tv.ru/torrent-online.php?translation=6909
+AceStream;Sky Sports 4;http://torrent-tv.ru/torrent-online.php?translation=7830

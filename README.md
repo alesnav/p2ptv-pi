@@ -26,20 +26,21 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 
 #### Formatos admitidos para [CANAL]
 * Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: `./tv.sh -c 1`
-* Enlace completo de Sopcast. Ejemplo: `./tv.sh -c sop://broker.sopcast.com:3912/150577`
-* Enlace completo de AceStream. Ejemplo: `./tv.sh -c acestream://ff6d068d982f5ac218d164cf43f97dc39926cf55`
+* Enlace completo de Sopcast. Ejemplo: `./tv.sh -c sop://broker.sopcast.com:3912/123456`
+* Enlace completo de AceStream (hash). Ejemplo: `./tv.sh -c acestream://ff6d068d982f5ac218d164cf43f97dc39926cf55`
+* Enlace completo de AceStream (*.acelive). Ejemplo: `./tv.sh -c http://example.com/tv.acelive`
 
 #### Requisitos
 * Si iptables está activo, deberá permitir la conexión al puerto 6878 de 127.0.0.1 (localhost) para la reproducción de los canales P2P.
-* Tener OMXPlayer instalado. Se puede instalar ejecutando `sudo apt-get install omxplayer`
-* Si xbmc está instalado, deberá existir un script de arranque y parada para que sea posible parar xbmc y arrancar OMXPlayer. Concretamente, el script deberá quedar en `/etc/init.d/xbmc`.
+* Tener OMXPlayer y wget instalados. Se pueden instalar ejecutando `sudo apt-get install wget omxplayer`
+* Si XBMC está instalado, deberá existir un script de arranque y parada para que sea posible parar XBMC y arrancar OMXPlayer. Concretamente, el script deberá quedar en `/etc/init.d/xbmc`.
 
 ### Lista de canales preconfigurados `canales.txt`
-Este fichero contiene toda la lista de canales preconfigurados, que de momento coincide con los once canales de [ArenaVision](http://www.arenavision.in/), de los cuales dos son de tipo AceStream y el resto de Sopcast.
+Este fichero contiene toda la lista de canales preconfigurados.
 
 Es posible introducir nuevos canales con el siguiente formato: `<Sopcast|AceStream>;<NOMBRE_CANAL>;<ENLACE>`
 
-Los canales de ArenaVision, sin embargo, están asociados a una dirección HTTP ya que el código de canal no siempre se mantiene y es necesario comprobarlo al vuelo antes de realizar la conexión.
+Los canales existentes, sin embargo, están asociados a una dirección HTTP ya que el código de canal no siempre se mantiene y es necesario comprobarlo al vuelo antes de realizar la conexión.
 
 La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lista actual es la siguiente:
 
@@ -55,6 +56,11 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     9     ArenaVision 9
     10    ArenaVision 10
     11    ArenaVision 11
+    12    EuroSport International
+    13    EuroSport 2 International
+    14    Sky Sports F1
+    15    Sky Sports 3
+    16    Sky Sports 4
 
 ### Instalación
     git clone https://github.com/alesnav/p2ptv-pi.git

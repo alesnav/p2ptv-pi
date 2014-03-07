@@ -4,6 +4,7 @@
 PRG=$0
 VERSION="p2ptv-pi v2.2"
 number_regex='^[0-9]+$'
+acelive_regex='^https?://.*\.acelive$'
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 let i=0
@@ -59,7 +60,8 @@ stop_playing()
 
 get_sopcast_link()
 {
-	sopcast_link_tmp=`wget $1 -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
+	url_tmp=$1
+	sopcast_link_tmp=`wget ${url_tmp} -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
 	if ! [[ ${sopcast_link: -1} =~ ${number_regex} ]]; then
 		sopcast_link_tmp=${sopcast_link_tmp%?}
 	fi
@@ -69,8 +71,12 @@ get_sopcast_link()
 
 get_acestream_link()
 {
-	acestream_link_tmp=`wget $1 -O - -o /dev/null | grep "this.loadPlayer" | cut -d '"' -f2`
+	url_tmp=$1
+	acestream_link_tmp=`wget ${url_tmp} -O - -o /dev/null | grep "this.loadPlayer" | cut -d '"' -f2`
 	acestream_link="acestream://${acestream_link_tmp}"
+	if [[ "${acestream_link}" == "acestream://" ]]; then
+		acestream_link=`wget ${url_tmp} -O - -o /dev/null | grep "this.loadTorrent" | cut -d '"' -f2`
+	fi
 	echo "${acestream_link}"
 }
 
@@ -125,22 +131,26 @@ if [[ ${CANAL} == sop://* ]]; then
 	ENLACE_OMXPLAYER="http://127.0.0.1:6878"
 	TEXTO="Cargando canal Sopcast ${ENLACE_P2P}..."
 	NOMBRE_CANAL=${CANAL}
+	TIPO_CANAL="SOPCAST"
 elif [[ ${CANAL} == acestream://* ]]; then
 	ENLACE_P2P=${CANAL}
 	ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
 	TEXTO="Cargando canal AceStream ${ENLACE_P2P}..."
 	NOMBRE_CANAL=${CANAL}
+	TIPO_CANAL="ACESTREAM"
 elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
 	if [[ ${ENLACES[${CANAL}]} == sop://* ]]; then
 		ENLACE_P2P=${ENLACES[${CANAL}]}
 		ENLACE_OMXPLAYER="http://127.0.0.1:6878"
 		TEXTO="Cargando canal Sopcast ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
+		TIPO_CANAL="SOPCAST"
 	elif [[ ${ENLACES[${CANAL}]} == http* ]]; then
 		ENLACE_P2P=`get_sopcast_link ${ENLACES[${CANAL}]}`
 		ENLACE_OMXPLAYER="http://127.0.0.1:6878"
 		TEXTO="Cargando canal Sopcast ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
+		TIPO_CANAL="SOPCAST"
 	fi
 elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	if [[ ${ENLACES[${CANAL}]} == acestream://* ]]; then
@@ -148,12 +158,24 @@ elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "$
 		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
 		TEXTO="Cargando canal AceStream ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
+		TIPO_CANAL="ACESTREAM"
 	elif [[ ${ENLACES[${CANAL}]} == http* ]]; then
 		ENLACE_P2P=`get_acestream_link ${ENLACES[${CANAL}]}`
-		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
+		if [[ ${ENLACE_P2P} == acestream://* ]]; then
+			ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
+		elif [[ ${ENLACE_P2P} == http* ]]; then
+			ENLACE_OMXPLAYER="http://127.0.0.1:6878/LOAD/TORRENT=${ENLACE_P2P}"
+		fi
 		TEXTO="Cargando canal AceStream ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
+		TIPO_CANAL="ACESTREAM"
 	fi
+elif [[ ${CANAL} =~ ${acelive_regex} ]]; then
+	ENLACE_P2P=${CANAL}
+	ENLACE_OMXPLAYER="http://127.0.0.1:6878/LOAD/TORRENT=${CANAL}"
+	TEXTO="Cargando canal AceStream ${CANAL}..."
+	NOMBRE_CANAL=${CANAL}
+	TIPO_CANAL="ACESTREAM"
 else
 	usage
 	exit 1
@@ -161,18 +183,19 @@ fi
 
 stop_playing
 echo "${TEXTO}"
-if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
+if [[ "${TIPO_CANAL}" == "SOPCAST" ]]; then
 	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
-elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
+elif [[ "${TIPO_CANAL}" == "ACESTREAM" ]]; then
 	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	sleep 10
 fi
 
 let timeout=0
 while [ ${timeout} -lt 30 ]; do ((++i))
 	listening=`netstat -na | grep 6878 | grep LISTEN | tail -1`
-	if [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
+	if [[ "${TIPO_CANAL}" == "SOPCAST" ]]; then
 		process=`ps aux | grep qemu-i386 | grep -v grep`
-	elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
+	elif [[ "${TIPO_CANAL}" == "ACESTREAM" ]]; then
 		process=`ps aux | grep "acestream/start.py" | grep -v grep`
 	fi
 	if [ -n "${listening}" ] || [ -z "${process}" ]; then
