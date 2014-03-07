@@ -21,8 +21,7 @@ usage()
 	echo "Opciones:"
 	echo " -h			Muestra este menú"
 	echo " -v			Muestra la versión"
-	echo " -s			Apaga OMXPlayer y cierra la conexión P2P TV"
-	echo " -x			(Conjuntamente con -s) Inicia XBMC tras apagar OMXPlayer y cerrar la conexión P2P TV"
+	echo " -s [0|1]		Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC"
 	echo " -l			Lista de todos los canales preconfigurados"
 	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)"
 	echo " -o			Apaga XBMC e inicia OMXPlayer"
@@ -35,9 +34,10 @@ usage()
 
 stop_playing()
 {
-	if [[ -f /var/run/p2ptv-pi.pid ]]; then
-		kill -9 $(cat /var/run/p2ptv-pi.pid) > /dev/null 2>&1
-		rm -f /var/run/p2ptv-pi.pid
+	if [[ -f ${DIR}/p2ptv-pi.pid ]]; then
+		kill -9 $(cat ${DIR}/p2ptv-pi.pid) > /dev/null 2>&1
+		rm -f ${DIR}/p2ptv-pi.pid
+		echo "Reproducción detenida"
 	fi
 	kill -2 $(pidof -x omxplayer.bin) > /dev/null 2>&1
 	listening=1
@@ -88,7 +88,7 @@ list_channels()
 
 [[ $# -lt 1 ]] && usage && exit 1
 
-while getopts ":hvxsloc:" OPTION
+while getopts ":hvs:loc:" OPTION
 do
 	case "$OPTION" in
 		h)
@@ -99,12 +99,13 @@ do
 			echo "${VERSION}"
 			exit 1
 			;;
-		x)
-			XBMC=1;
-			;;
 		s)
+			if [ "${OPTARG}" == "1" ]; then
+				XBMC=1
+			else
+				XBMC=0
+			fi
 			stop_playing
-			echo "Reproducción detenida"
 			exit 1
 			;;
 		l)
@@ -182,9 +183,9 @@ fi
 stop_playing
 echo "${TEXTO}"
 if [[ "${TIPO_CANAL}" == "SOPCAST" ]]; then
-	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid
 elif [[ "${TIPO_CANAL}" == "ACESTREAM" ]]; then
-	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > /var/run/p2ptv-pi.pid
+	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid
 	sleep 10
 fi
 
