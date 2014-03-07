@@ -191,6 +191,7 @@ if [ -z "${listening}" ]; then
 	exit 1
 else
 	echo "Conectado al canal ${NOMBRE_CANAL}"
+	sleep 2
 fi
 
 if [[ ${OMXPLAYER} -eq 1 ]]; then
