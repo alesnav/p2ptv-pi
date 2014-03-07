@@ -10,7 +10,7 @@ Gracias a [somosbinarios.es](http://www.somosbinarios.es) por realizar el desarr
 
 ### Script para reproducción automática `tv.sh`
 
-En este momento, únicamente se ha probado su utilización sobre raspbian, por lo que quizás surja algún problema usando cualquier otra distribución. Si esto sucediera, abriendo un ticket desde [aquí](https://github.com/alesnav/sopcast-pi/issues) se podría adaptar el código para su correcto funcionamiento en todas las plataformas.
+En este momento, únicamente se ha probado su utilización sobre raspbian, por lo que quizás surja algún problema usando cualquier otra distribución. Si esto sucediera, abriendo un ticket desde [aquí](https://github.com/alesnav/p2ptv-pi/issues) se podría adaptar el código para su correcto funcionamiento en todas las plataformas.
 
 #### Uso del script
     $ ./tv.sh [OPCIONES]
