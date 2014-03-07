@@ -49,10 +49,10 @@ stop_playing()
 	if [[ ${XBMC} -eq 1 ]]; then
 		if ps ax | grep -v grep | grep xbmc > /dev/null; then
 			echo "Reiniciando XBMC..."
-			/etc/init.d/xbmc restart
+			sudo /etc/init.d/xbmc restart
 		else
 			echo "Iniciando XBMC..."
-			/etc/init.d/xbmc start
+			sudo /etc/init.d/xbmc start
 		fi
 	fi
 }
@@ -142,7 +142,7 @@ elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "$
 		TEXTO="Cargando canal Sopcast ${CANALES[${CANAL}]} (${ENLACE_P2P})..."
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
 	fi
-elif [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
+elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	if [[ ${ENLACES[${CANAL}]} == acestream://* ]]; then
 		ENLACE_P2P=${ENLACES[${CANAL}]}
 		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
@@ -196,7 +196,7 @@ fi
 if [[ ${OMXPLAYER} -eq 1 ]]; then
 	if ps ax | grep -v grep | grep xbmc > /dev/null; then
 		echo "Apagando XBMC..."
-		/etc/init.d/xbmc stop
+		sudo /etc/init.d/xbmc stop
 	fi
 	echo "Iniciando OMXPlayer..."
 	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
