@@ -2,9 +2,7 @@
 #!/bin/bash
 
 PRG=$0
-VERSION="p2ptv-pi v2.2"
-number_regex='^[0-9]+$'
-acelive_regex='^https?://.*\.acelive$'
+VERSION="p2ptv-pi v2.3"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 let i=0
@@ -62,7 +60,7 @@ get_sopcast_link()
 {
 	url_tmp=$1
 	sopcast_link_tmp=`wget ${url_tmp} -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
-	if ! [[ ${sopcast_link: -1} =~ ${number_regex} ]]; then
+	if ! [[ ${sopcast_link: -1} =~ ^[0-9]+$ ]]; then
 		sopcast_link_tmp=${sopcast_link_tmp%?}
 	fi
 	sopcast_link="sop://${sopcast_link_tmp}"
@@ -138,7 +136,7 @@ elif [[ ${CANAL} == acestream://* ]]; then
 	TEXTO="Cargando canal AceStream ${ENLACE_P2P}..."
 	NOMBRE_CANAL=${CANAL}
 	TIPO_CANAL="ACESTREAM"
-elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
+elif [[ ${CANAL} =~ ^[0-9]+$ ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "SOPCAST" ]]; then
 	if [[ ${ENLACES[${CANAL}]} == sop://* ]]; then
 		ENLACE_P2P=${ENLACES[${CANAL}]}
 		ENLACE_OMXPLAYER="http://127.0.0.1:6878"
@@ -152,7 +150,7 @@ elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "$
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
 		TIPO_CANAL="SOPCAST"
 	fi
-elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
+elif [[ ${CANAL} =~ ^[0-9]+$ ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "${TIPOS_CANAL[${CANAL}]}" == "ACESTREAM" ]]; then
 	if [[ ${ENLACES[${CANAL}]} == acestream://* ]]; then
 		ENLACE_P2P=${ENLACES[${CANAL}]}
 		ENLACE_OMXPLAYER=`echo ${ENLACE_P2P} | awk 'BEGIN {FS="acestream://"} {print "http://127.0.0.1:6878/LOAD/PID="$2}'`
@@ -170,7 +168,7 @@ elif [[ ${CANAL} =~ ${number_regex} ]] && [[ -n ${ENLACES[${CANAL}]} ]] && [[ "$
 		NOMBRE_CANAL=${CANALES[${CANAL}]}
 		TIPO_CANAL="ACESTREAM"
 	fi
-elif [[ ${CANAL} =~ ${acelive_regex} ]]; then
+elif [[ ${CANAL} =~ ^https?://.*\.acelive$ ]]; then
 	ENLACE_P2P=${CANAL}
 	ENLACE_OMXPLAYER="http://127.0.0.1:6878/LOAD/TORRENT=${CANAL}"
 	TEXTO="Cargando canal AceStream ${CANAL}..."
