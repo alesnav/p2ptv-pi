@@ -61,3 +61,6 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
 
 ### Ejemplo de uso
 Ejemplo de reproducción del canal ArenaVision 5 iniciando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
+
+### Licencia
+Este proyecto queda protegido bajo la licencia MIT.
