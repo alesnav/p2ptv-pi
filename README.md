@@ -55,11 +55,14 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     9     ArenaVision 9
     10    ArenaVision 10
     11    ArenaVision 11
-    12    EuroSport International
-    13    EuroSport 2 International
-    14    Sky Sports F1
-    15    Sky Sports 3
-    16    Sky Sports 4
+    12    ArenaVision 12
+    13    ArenaVision 13
+    14    ArenaVision 14
+    15    EuroSport International
+    16    EuroSport 2 International
+    17    Sky Sports F1
+    18    Sky Sports 3
+    19    Sky Sports 4
 
 ### Instalación
     git clone https://github.com/alesnav/p2ptv-pi.git

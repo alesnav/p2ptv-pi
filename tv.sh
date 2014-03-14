@@ -210,7 +210,6 @@ if [ -z "${listening}" ]; then
 	exit 1
 else
 	echo "Conectado al canal ${NOMBRE_CANAL}"
-	sleep 3
 fi
 
 if [[ ${OMXPLAYER} -eq 1 ]]; then
@@ -219,6 +218,7 @@ if [[ ${OMXPLAYER} -eq 1 ]]; then
 		sudo /etc/init.d/xbmc stop
 	fi
 	echo "Iniciando OMXPlayer..."
+	sleep 10
 	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
 fi
 
