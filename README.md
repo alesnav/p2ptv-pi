@@ -17,11 +17,13 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 
 #### Opciones
 * **-h** - Muestra este menú
-* **-v** - Muestra la versión
+* **-V** - Muestra la versión
+* **-v** - Activa el modo debug
 * **-s [0|1]** - Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC
+* **-t [n]** - Indica el tiempo en segundos a esperar para la carga del canal antes de iniciar OMXPlayer (15 por defecto).
 * **-l** - Lista de todos los canales preconfigurados
 * **-c [CANAL]** - Indica el canal a cargar (ver formatos admitidos)
-* **-o** - Apaga XBMC e inicia OMXPlayer
+* **-o [0|1]** - Apaga XBMC e inicia OMXPlayer. 0: Salida de video por defecto. 1: Salida por HDMI.
 
 #### Formatos admitidos para [CANAL]
 * Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: `./tv.sh -c 1`
@@ -32,7 +34,7 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 #### Requisitos
 * Si iptables está activo, deberá permitir la conexión al puerto 6878 de 127.0.0.1 (localhost) para la reproducción de los canales P2P.
 * Tener OMXPlayer y wget instalados. Se pueden instalar ejecutando `sudo apt-get install omxplayer wget`
-* Si XBMC está instalado, deberá existir un script de arranque y parada para que sea posible parar XBMC y arrancar OMXPlayer. Concretamente, el script deberá quedar en `/etc/init.d/xbmc`.
+* Si XBMC está instalado, deberá contar con un script de arranque y parada. Por defecto, se usa el método de Debian (service xbmc start|restart|stop). Si el método es diferente, se deberá editar el script `tv.sh`.
 
 ### Lista de canales preconfigurados `canales.txt`
 Este fichero contiene toda la lista de canales preconfigurados.
@@ -54,21 +56,12 @@ La lista completa se puede consultar ejecutando `./tv.sh -l`. Igualmente, la lis
     8     ArenaVision 8
     9     ArenaVision 9
     10    ArenaVision 10
-    11    ArenaVision 11
-    12    ArenaVision 12
-    13    ArenaVision 13
-    14    ArenaVision 14
-    15    EuroSport International
-    16    EuroSport 2 International
-    17    Sky Sports F1
-    18    Sky Sports 3
-    19    Sky Sports 4
 
 ### Instalación
     git clone https://github.com/alesnav/p2ptv-pi.git
 
 ### Ejemplo de uso
-Ejemplo de reproducción del canal ArenaVision 5 iniciando automáticamente OMXPlayer: `./tv.sh -c 5 -o`
+Ejemplo de reproducción del canal ArenaVision 5 iniciando automáticamente OMXPlayer: `./tv.sh -c 5 -o 1`
 
 ### Licencia
 Este proyecto queda protegido bajo la licencia MIT.

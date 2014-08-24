@@ -2,14 +2,18 @@
 #!/bin/bash
 
 PRG=$0
-VERSION="p2ptv-pi v2.3"
+VERSION="p2ptv-pi v3.0"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+xbmc_start="sudo service xbmc start"
+xbmc_stop="sudo service xbmc stop"
+xbmc_start="sudo service xbmc restart"
 
 let i=0
 while read line || [[ -n "${line}" ]]; do ((++i))
 	[[ "$line" =~ ^#.*$ ]] && continue
 	TIPOS_CANAL[$i]=`echo ${line} | cut -d ";" -f1 | tr 'a-z' 'A-Z'`
-    CANALES[$i]=`echo ${line} | cut -d ";" -f2`
+	CANALES[$i]=`echo ${line} | cut -d ";" -f2`
 	ENLACES[$i]=`echo ${line} | cut -d ";" -f3`
 done < "${DIR}/canales.txt"
 usage()
@@ -19,12 +23,13 @@ usage()
 	echo "Uso: ${PRG} [OPCIONES]"
 	echo ""
 	echo "Opciones:"
-	echo " -h			Muestra este menú"
-	echo " -v			Muestra la versión"
-	echo " -s [0|1]		Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC"
-	echo " -l			Lista de todos los canales preconfigurados"
-	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)"
-	echo " -o			Apaga XBMC e inicia OMXPlayer"
+	echo " -h			Muestra este menú."
+	echo " -v			Muestra la versión."
+	echo " -s [0|1]		Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC."
+	echo " -l			Lista de todos los canales preconfigurados."
+	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)."
+	echo " -o [0|1]		Apaga XBMC e inicia OMXPlayer. 0: Salida de video por defecto. 1: Salida por HDMI."
+	echo " -t [n]			Indica el tiempo en segundos a esperar para la carga del canal antes de iniciar OMXPlayer (15 por defecto)."
 	echo ""
 	echo "Formatos admitidos para [CANAL]:"
 	echo " - Código de canal de uno de los canales preconfigurados (opción -l). Ejemplo: ./tv.sh -c 1"
@@ -48,10 +53,10 @@ stop_playing()
 	if [[ ${XBMC} -eq 1 ]]; then
 		if ps ax | grep -v grep | grep xbmc > /dev/null; then
 			echo "Reiniciando XBMC..."
-			sudo /etc/init.d/xbmc restart
+			${xbmc_restart}
 		else
 			echo "Iniciando XBMC..."
-			sudo /etc/init.d/xbmc start
+			${xbmc_start}
 		fi
 	fi
 }
@@ -82,22 +87,35 @@ list_channels()
 {
 	printf "ID\tCanal\n"
 	for i in "${!CANALES[@]}"; do
-		printf "%s\t%s\n" "$i" "${CANALES[$i]}"
+		printf "%s\t%s\n" "$i" "${CANALES[$i]} (${TIPOS_CANAL[$i]})"
 	done
 }
 
 [[ $# -lt 1 ]] && usage && exit 1
 
-while getopts ":hvs:loc:" OPTION
+while getopts ":hVvt:s:lo:c:" OPTION
 do
 	case "$OPTION" in
 		h)
 			usage
 			exit 1
 			;;
-		v)
+		V)
 			echo "${VERSION}"
 			exit 1
+			;;
+		v)
+			VERBOSE=1
+			;;
+
+		t)
+			re='^[0-9]+$'
+			if ! [[ ${OPTARG} =~ ${re} ]] ; then
+				usage
+				exit 1
+			else
+				WAIT="${OPTARG}"
+			fi
 			;;
 		s)
 			if [ "${OPTARG}" == "1" ]; then
@@ -114,6 +132,11 @@ do
 			;;
 		o)
 			OMXPLAYER=1;
+			if [ "${OPTARG}" == "1" ]; then
+				OMX_HDMI=1
+			else
+				OMX_HDMI=0
+			fi
 			;;
 		c)
 			CANAL=${OPTARG}
@@ -183,43 +206,69 @@ fi
 stop_playing
 echo "${TEXTO}"
 if [[ "${TIPO_CANAL}" == "SOPCAST" ]]; then
+	if [[ ${VERBOSE} -eq 1 ]];then
+		echo "Comando: nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid"
+	fi
 	nice -10 ${DIR}/sopcast/qemu-i386 ${DIR}/sopcast/lib/ld-linux.so.2 --library-path ${DIR}/sopcast/lib ${DIR}/sopcast/sp-sc-auth ${ENLACE_P2P} 1234 6878 > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid
 elif [[ "${TIPO_CANAL}" == "ACESTREAM" ]]; then
+	if [[ ${VERBOSE} -eq 1 ]];then
+		echo "Comando: nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid"
+	fi
 	nice -10 ${DIR}/acestream/start.py > /dev/null 2>&1 & echo $! > ${DIR}/p2ptv-pi.pid
 	sleep 10
 fi
 
 let timeout=0
-while [ ${timeout} -lt 30 ]; do ((++i))
+while [ ${timeout} -lt 60 ]; do ((++i))
 	listening=`netstat -na | grep 6878 | grep LISTEN | tail -1`
 	if [[ "${TIPO_CANAL}" == "SOPCAST" ]]; then
 		process=`ps aux | grep qemu-i386 | grep -v grep`
 	elif [[ "${TIPO_CANAL}" == "ACESTREAM" ]]; then
 		process=`ps aux | grep "acestream/start.py" | grep -v grep`
 	fi
-	if [ -n "${listening}" ] || [ -z "${process}" ]; then
+	if [ -n "${listening}" ]; then
+		if [[ ${VERBOSE} -eq 1 ]];then
+			echo "El puerto de ${TIPO_CANAL} (6878) ya está la escucha."
+		fi
 		break
+	elif [ -z "${process}" ]; then
+		if [[ ${VERBOSE} -eq 1 ]];then
+			echo "El proceso ${TIPO_CANAL} ya no existe."
+		fi
+		echo "Imposible conectar al canal especificado"
+		stop_playing
+		exit 1
 	else
+		if [[ ${VERBOSE} -eq 1 ]];then
+			echo "Esperando 2 segundos a que el puerto 6878 esté a la escucha..."
+		fi
 		sleep 2
 	fi
 done
 
-if [ -z "${listening}" ]; then
-	echo "Imposible conectar al canal especificado"
-	stop_playing
-	exit 1
-else
-	echo "Conectado al canal ${NOMBRE_CANAL}"
-fi
+echo "Conectado al canal ${NOMBRE_CANAL} (${TIPO_CANAL})"
 
 if [[ ${OMXPLAYER} -eq 1 ]]; then
 	if ps ax | grep -v grep | grep xbmc > /dev/null; then
 		echo "Apagando XBMC..."
-		sudo /etc/init.d/xbmc stop
+		${xbmc_stop}
 	fi
+	if [[ -z ${WAIT} ]]; then
+		WAIT=15
+	fi
+	echo "Esperando ${WAIT} segundos..."
+	sleep ${WAIT}
 	echo "Iniciando OMXPlayer..."
-	sleep 10
-	nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &
+	if [[ ${OMX_HDMI} -eq 1 ]]; then
+		echo "Activando salida por HDMI..."
+		start_omx="nice -10 omxplayer -r -o hdmi --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &"
+	else
+		start_omx="nice -10 omxplayer -r --live ${ENLACE_OMXPLAYER} > /dev/null 2>&1 &"
+	fi
+	if [[ ${VERBOSE} -eq 1 ]]; then
+		echo "Comando: ${start_omx}"
+	fi
+	${DIR}/start_omxplayer.sh "${start_omx}" > /dev/null 2>&1 &
 fi
 
 exit 0
