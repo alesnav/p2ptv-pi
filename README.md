@@ -22,7 +22,7 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 * **-s [0|1]** - Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC
 * **-t [n]** - Indica el tiempo en segundos a esperar para la carga del canal antes de iniciar OMXPlayer (15 por defecto).
 * **-l** - Lista de todos los canales preconfigurados
-* **-p [n]** - Muestra la programación de ArenaVision para el dia indicado. [n] indica el día de la prohramación, siendo 0 el día actual, 1 el día siguiente, etc.
+* **-p [n]** - Muestra la programación de ArenaVision para el dia indicado. [n] indica el día de la programación, siendo 0 el día actual, 1 el día siguiente, etc.
 * **-c [CANAL]** - Indica el canal a cargar (ver formatos admitidos)
 * **-o [0|1]** - Apaga XBMC e inicia OMXPlayer. 0: Salida de video por defecto. 1: Salida por HDMI.
 

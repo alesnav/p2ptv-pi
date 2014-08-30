@@ -28,7 +28,7 @@ usage()
 	echo " -s [0|1]		Apaga OMXPlayer y cierra la conexión P2P TV. 0: No iniciar XBMC. 1: Iniciar XBMC."
 	echo " -l			Lista de todos los canales preconfigurados."
 	echo " -p [n]			Muestra la programación de ArenaVision para el dia indicado."
-	echo "			[n] indica el día de la prohramación, siendo 0 el día actual, 1 el día siguiente, etc."
+	echo "			[n] indica el día de la programación, siendo 0 el día actual, 1 el día siguiente, etc."
 	echo " -c [CANAL]		Indica el canal a cargar (ver formatos admitidos)."
 	echo " -o [0|1]		Apaga XBMC e inicia OMXPlayer. 0: Salida de video por defecto. 1: Salida por HDMI."
 	echo " -t [n]			Indica el tiempo en segundos a esperar para la carga del canal antes de iniciar OMXPlayer (15 por defecto)."
