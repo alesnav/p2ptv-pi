@@ -34,7 +34,7 @@ En este momento, únicamente se ha probado su utilización sobre raspbian, por l
 
 #### Requisitos
 * Si iptables está activo, deberá permitir la conexión al puerto 6878 de 127.0.0.1 (localhost) para la reproducción de los canales P2P.
-* Tener OMXPlayer y wget instalados. Se pueden instalar ejecutando `sudo apt-get install omxplayer wget`
+* Tener OMXPlayer, wget y w3m instalados. Se pueden instalar ejecutando `sudo apt-get install omxplayer wget w3m`
 * Si XBMC está instalado, deberá contar con un script de arranque y parada. Por defecto, se usa el método de Debian (service xbmc start|restart|stop). Si el método es diferente, se deberá editar el script `tv.sh`.
 
 ### Lista de canales preconfigurados `canales.txt`
