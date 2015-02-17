@@ -1,10 +1,12 @@
-Sopcast;ArenaVision 1;http://go.arenavision.in/p/av1.html
-Sopcast;ArenaVision 2;http://go.arenavision.in/p/av2.html
-AceStream;ArenaVision 3;http://go.arenavision.in/p/av3.html
-AceStream;ArenaVision 4;http://go.arenavision.in/p/av4.html
-Sopcast;ArenaVision 5;http://go.arenavision.in/p/av5.html
-AceStream;ArenaVision 6;http://go.arenavision.in/p/av6.html
-Sopcast;ArenaVision 7;http://go.arenavision.in/p/av7.html
-AceStream;ArenaVision 8;http://go.arenavision.in/p/av8.html
-Sopcast;ArenaVision 9;http://go.arenavision.in/p/av9.html
-AceStream;ArenaVision 10;http://go.arenavision.in/p/av10.html
+AceStream;ArenaVision 1;http://arenavision.in/arenavision1
+AceStream;ArenaVision 2;http://arenavision.in/arenavision2
+AceStream;ArenaVision 3;http://arenavision.in/arenavision3
+AceStream;ArenaVision 4;http://arenavision.in/arenavision4
+AceStream;ArenaVision 5;http://arenavision.in/arenavision5
+Sopcast;ArenaVision 6;http://arenavision.in/arenavision6
+Sopcast;ArenaVision 7;http://arenavision.in/arenavision7
+Sopcast;ArenaVision 8;http://arenavision.in/arenavision8
+Sopcast;ArenaVision 9;http://arenavision.in/arenavision9
+Sopcast;ArenaVision 10;http://arenavision.in/arenavision10
+
+

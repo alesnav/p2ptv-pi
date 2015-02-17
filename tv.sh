@@ -66,7 +66,7 @@ stop_playing()
 get_sopcast_link()
 {
 	url_tmp=$1
-	sopcast_link_tmp=`wget ${url_tmp} -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1`
+	sopcast_link_tmp=`wget ${url_tmp} -O - ${DIR}/page.html -o /dev/null | grep "sop://" | tail -1 | awk 'BEGIN {FS="sop://"} {print $2}' | cut -d " " -f1 | cut -d "\"" -f1`
 	if ! [[ ${sopcast_link: -1} =~ ^[0-9]+$ ]]; then
 		sopcast_link_tmp=${sopcast_link_tmp%?}
 	fi
