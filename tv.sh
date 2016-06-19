@@ -95,7 +95,7 @@ list_channels()
 
 show_schedule()
 {
-	w3m -dump http://go.arenavision.in/p/agendaschedule.html -cols 500 | grep `date +%d/%m/%y -d "+$1 days"`
+	w3m -dump http://www.arenavision.in/agenda -cols 500 | grep `date +%d/%m/%y -d "+$1 days"`
 }
 
 [[ $# -lt 1 ]] && usage && exit 1
